@@ -34,6 +34,7 @@ def product_list(request, id):
 
 @api_view(['GET'])
 def product_lists(request):
-    queryset =Product.objects.all()
+    # queryset =Product.objects.all()
+    queryset =Product.objects.select_related('collection').all()
     serializer = ProductSerializer(queryset, many=True)
     return Response(serializer.data)

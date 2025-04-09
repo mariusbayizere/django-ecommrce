@@ -8,7 +8,10 @@ class ProductSerializer(serializers.Serializer):
     Price = serializers.DecimalField(max_digits=6, decimal_places=2)
     Inventory = serializers.IntegerField()
     product_tax = serializers.SerializerMethodField(method_name='get_product_tax')
-    collection = serializers.PrimaryKeyRelatedField(queryset=Collection.objects.all())
+    #this will "Displaying only ID of ForeignKey field"
+    # collection = serializers.PrimaryKeyRelatedField(queryset=Collection.objects.all())
+    #this will "Displaying name of ForeignKey field, means instead of ID it will display the name of collection"
+    collection = serializers.StringRelatedField()
 
 
     def get_product_tax(self, product: Product):
