@@ -14,11 +14,18 @@ from .serializer import ProductSerializer
 def product_list(request):
     return HttpResponse('this Marius Bayizere he is Djngo developer Now')
 
-@api_view()
+@api_view(['GET', 'PUT'])
 def product_list(request, id):
         product = get_object_or_404(Product, pk=id)
-        serializer = ProductSerializer(product)
-        return Response(serializer.data)
+        if request.method == 'GET':
+             serializer = ProductSerializer(product)
+             return Response(serializer.data)
+        elif request.method == 'PUT':
+            serializer = ProductSerializer(product, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 # SECOND WAY TO GET THE PRODUCT WITH TRY AND CATCH
@@ -32,9 +39,15 @@ def product_list(request, id):
 #         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def product_lists(request):
-    # queryset =Product.objects.all()
-    queryset =Product.objects.select_related('collection').all()
-    serializer = ProductSerializer(queryset, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
